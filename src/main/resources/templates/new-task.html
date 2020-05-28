@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Анализатор запросов - Новая задача</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link type="text/css" rel="stylesheet" href="/style.css">
+</head>
+<body>
+<h1>Анализ запросов на конкурентность</h1>
+<form action="#" th:action="@{/new-task}" method="post" id="search-task-form" th:object="${searchTaskModel}">
+    <p>Список запросов</p>
+    <textarea rows="20" cols="40" th:field="*{queries}" form="search-task-form"></textarea>
+    <br>
+    <label>Яндекс</label>
+    <input type="checkbox" th:field="*{doYandexSearch}">
+
+    <label>Google</label>
+    <input type="checkbox" th:field="*{doGoogleSearch}">
+    <br>
+    <input type="submit" th:value="ОК">
+</form>
+
+</body>
+</html>

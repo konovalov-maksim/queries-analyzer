@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {
 		"com.konovalov.queriesanalyzer.controllers",
+		"com.konovalov.queriesanalyzer.models",
 		"com.konovalov.queriesanalyzer.config"
 })
 public class WebAppMain {
