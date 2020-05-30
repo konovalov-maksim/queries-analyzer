@@ -1,10 +1,5 @@
 package com.konovalov.queriesanalyzer.models;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class SearchTaskModel {
 
     private String queries;
@@ -12,13 +7,6 @@ public class SearchTaskModel {
     private boolean doYandexSearch;
 
     private boolean doGoogleSearch;
-
-    public List<String> getQueriesList() {
-        if (queries == null || queries.isEmpty()) return Collections.emptyList();
-        return Arrays.stream(queries.split("\r\n"))
-                .distinct()
-                .collect(Collectors.toList());
-    }
 
     public String getQueries() {
         return queries;

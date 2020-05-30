@@ -1,0 +1,17 @@
+body {
+    background-color: #eee;
+    color: rgb(97, 97, 97);
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 100;
+    margin: 20px 0px 10px 10px;
+}
+
+.table-header {
+
+}

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    private final SessionFactory sessionFactory;
+/*    private final SessionFactory sessionFactory;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -33,5 +33,5 @@ public class TestController {
             session.close();
         }
         return "error";
-    }
+    }*/
 }

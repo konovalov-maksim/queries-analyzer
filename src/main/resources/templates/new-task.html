@@ -10,14 +10,15 @@
 <form action="#" th:action="@{/new-task}" method="post" id="search-task-form" th:object="${searchTaskModel}">
     <p>Список запросов</p>
     <textarea rows="20" cols="40" th:field="*{queries}" form="search-task-form"></textarea>
+
     <br>
+    <label>Google</label>
+    <input type="checkbox" th:field="*{doGoogleSearch}">
+
     <label>Яндекс</label>
     <input type="checkbox" th:field="*{doYandexSearch}">
 
-    <label>Google</label>
-    <input type="checkbox" th:field="*{doGoogleSearch}">
-    <br>
-    <input type="submit" th:value="ОК">
+    <input type="submit" th:value="ОК" >
 </form>
 
 </body>

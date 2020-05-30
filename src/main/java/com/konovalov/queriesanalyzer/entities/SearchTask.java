@@ -1,6 +1,7 @@
 package com.konovalov.queriesanalyzer.entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,10 +27,12 @@ public class SearchTask {
     private int statusId = 0;
 
     @OneToMany(mappedBy = "searchTask", cascade = CascadeType.ALL)
-    private List<Query> queries;
+    private List<Query> queries = new ArrayList<>();
 
-    @Transient
-    private User user;
+    public void addQueries(List<Query> queries) {
+        queries.forEach(q -> q.setSearchTask(this));
+        this.queries.addAll(queries);
+    }
 
     public Long getId() {
         return id;
@@ -71,11 +74,11 @@ public class SearchTask {
         this.queries = queries;
     }
 
-    public User getUser() {
-        return user;
+    public int getStatusId() {
+        return statusId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setStatusId(int statusId) {
+        this.statusId = statusId;
     }
 }
