@@ -37,3 +37,13 @@ td.number-column {
     padding: 10px 15px 10px 15px;
     border: rgba(255, 255, 255, 0.2) 1px solid;
 }
+
+.pagination-control {
+    margin: 5px;
+}
+
+.pagination-control a {
+    color: rgb(97, 97, 97);
+    margin: 0 0.3em 0 0.3em;
+    text-decoration: none;
+}
