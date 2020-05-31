@@ -12,6 +12,28 @@ h1 {
     margin: 20px 0px 10px 10px;
 }
 
-.table-header {
+.border-table {
+    border-collapse: collapse;
+    border-color: rgb(97, 97, 97);
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 1px 0px, rgba(0, 0, 0, 0.5) 0px 1px 1px -1px, rgba(0, 0, 0, 0.2) 0px 1px 3px 0px;
+    background-color: #f9f9f9;
+}
 
+.border-table td {
+    border-bottom: rgba(0, 0, 0, 0.1) 1px solid;
+    padding: 7px 15px 7px 15px;
+    text-align: center;
+}
+
+td.number-column {
+    text-align: right;
+}
+
+.table-header td {
+    color: white;
+    text-align: center;
+    background-color: #4485f4;
+    padding: 10px 15px 10px 15px;
+    border: rgba(255, 255, 255, 0.2) 1px solid;
 }

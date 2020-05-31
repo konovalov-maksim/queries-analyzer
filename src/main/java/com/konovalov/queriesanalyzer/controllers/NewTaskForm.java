@@ -32,7 +32,7 @@ public class NewTaskForm {
             @ModelAttribute SearchTaskModel searchTaskModel,
             Model model) {
         searchTasksManager.createSearchTask(searchTaskModel);
-        return "redirect:/tasks-list";
+        return "redirect:/tasks";
     }
 
 }

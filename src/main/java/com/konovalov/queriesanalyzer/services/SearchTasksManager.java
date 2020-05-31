@@ -6,6 +6,7 @@ import com.konovalov.queriesanalyzer.models.SearchTaskModel;
 import com.konovalov.queriesanalyzer.dao.SearchTasksDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public class SearchTasksManager {
         this.searchTasksDao = searchTasksDao;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void createSearchTask(SearchTaskModel searchTaskModel) {
         SearchTask searchTask = new SearchTask();
         List<Query> queries = Arrays.stream(searchTaskModel.getQueries().split("\r\n"))

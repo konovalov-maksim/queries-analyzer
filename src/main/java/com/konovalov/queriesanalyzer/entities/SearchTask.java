@@ -1,6 +1,7 @@
 package com.konovalov.queriesanalyzer.entities;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,19 @@ public class SearchTask {
     public void addQueries(List<Query> queries) {
         queries.forEach(q -> q.setSearchTask(this));
         this.queries.addAll(queries);
+    }
+
+    public String getDateAddedStr() {
+        if (dateAdded == null) return "";
+        return new SimpleDateFormat("dd.MM.yy hh:mm").format(dateAdded);
+    }
+
+    public String getDoGoogleSearchStr() {
+        return doGoogleSearch ? "+" : "-";
+    }
+
+    public String getDoYandexSearchStr() {
+        return doYandexSearch ? "+" : "-";
     }
 
     public Long getId() {
