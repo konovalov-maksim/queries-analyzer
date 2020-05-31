@@ -35,6 +35,15 @@ public class SearchTask {
         this.queries.addAll(queries);
     }
 
+    public int getProcessedQueriesCount() {
+        return (int) queries.stream().filter(Query::isProcessed).count();
+    }
+
+    public int getProgress() {
+        if (queries.isEmpty()) return 100;
+        return getProcessedQueriesCount() * 100 / queries.size();
+    }
+
     public String getDateAddedStr() {
         if (dateAdded == null) return "";
         return new SimpleDateFormat("dd.MM.yy hh:mm").format(dateAdded);

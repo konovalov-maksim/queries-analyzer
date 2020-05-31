@@ -12,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 
 @Controller
 public class Tasks {
@@ -30,9 +32,9 @@ public class Tasks {
     ) {
         pageNum = pageNum - 1;
         if (pageNum < 0) pageNum = 0;
-        Page<SearchTask> tasksPage = searchTasksDao.findAll(PageRequest.of(pageNum, 3, Sort.Direction.DESC,"id"));
-        tasksPage.getContent();
-        model.addAttribute("tasksList", tasksPage.getContent());
+        Page<SearchTask> tasksPage = searchTasksDao.findAll(PageRequest.of(pageNum, 50, Sort.Direction.DESC,"id"));
+        List<SearchTask> searchTasks = tasksPage.getContent();
+        model.addAttribute("tasksList", searchTasks);
         PaginationModel pagination = new PaginationModel(tasksPage.getTotalPages(), pageNum);
         model.addAttribute("pagination", pagination);
         return "tasks";

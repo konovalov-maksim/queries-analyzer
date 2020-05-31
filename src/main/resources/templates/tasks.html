@@ -16,6 +16,7 @@
             <td>Запросы</td>
             <td>Google</td>
             <td>Яндекс</td>
+            <td>Прогресс</td>
         </tr>
         <tr th:each="task : ${tasksList}">
             <td th:text="${task.getId()}" class="number-column"/>
@@ -23,6 +24,7 @@
             <td th:text="${task.getQueries().size()}" class="number-column"/>
             <td th:text="${task.getDoGoogleSearchStr()}"/>
             <td th:text="${task.getDoYandexSearchStr()}"/>
+            <td th:text="${task.getProgress() + '%'}"/>
         </tr>
     </table>
     <div class="pagination-control">
@@ -30,7 +32,7 @@
         <a th:text="1" th:href="@{/tasks(page=1)}" th:if="${pagination.isPrevPagesSkipped()}"/>
         <span th:text="..." th:if="${pagination.isPrevPagesSkipped()}"/>
         <a th:each="pageNum : ${pagination.getPrevPagesNums()}" th:text="${pageNum + 1}" th:href="@{/tasks(page=${pageNum + 1})}"/>
-        <a th:text="${pagination.getCurPageNum() + 1}"/>
+        <a th:text="${pagination.getCurPageNum() + 1}" th:if="${pagination.getLastPageNum() > 0}"/>
         <a th:each="pageNum : ${pagination.getNextPagesNums()}" th:text="${pageNum + 1}" th:href="@{/tasks(page=${pageNum + 1})}"/>
         <span th:text="..." th:if="${pagination.isNextPagesSkipped()}"/>
         <a th:text="${pagination.getLastPageNum() + 1}" th:href="@{/tasks(page=${pagination.getLastPageNum() + 1})}" th:if="${pagination.isNextPagesSkipped()}"/>
