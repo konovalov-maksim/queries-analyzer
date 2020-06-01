@@ -15,6 +15,9 @@ public class SearchTask {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "date_added", insertable = false, updatable = false)
     private Date dateAdded;
 
@@ -63,6 +66,14 @@ public class SearchTask {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getDateAdded() {

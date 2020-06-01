@@ -12,6 +12,10 @@ h1 {
     margin: 20px 0px 10px 10px;
 }
 
+a {
+    color: black;
+}
+
 .border-table {
     border-collapse: collapse;
     border-color: rgb(97, 97, 97);
@@ -28,6 +32,10 @@ h1 {
 
 td.number-column {
     text-align: right;
+}
+
+td.tex-column {
+    text-align: left;
 }
 
 .table-header td {
