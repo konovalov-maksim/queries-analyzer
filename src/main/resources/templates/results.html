@@ -15,7 +15,7 @@
             <td>Яндекс</td>
         </tr>
         <tr th:each="query : ${queries}">
-            <td th:text="${query.getText()}"/>
+            <td th:text="${query.getText()}" class="tex-column"/>
             <td><input type="checkbox" th:value="${query.getGoogleSearchResult() != null}"></td>
             <td><input type="checkbox" th:value="${query.getYandexSearchResult() != null}"></td>
         </tr>

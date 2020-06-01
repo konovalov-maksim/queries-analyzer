@@ -8,8 +8,13 @@
 <body>
 <h1>Анализ запросов на конкурентность</h1>
 <form action="#" th:action="@{/new-task}" method="post" id="search-task-form" th:object="${searchTaskModel}">
-    <p>Список запросов</p>
-    <textarea rows="20" cols="40" th:field="*{queries}" form="search-task-form"></textarea>
+
+    <label>Название задачи</label><br>
+    <input type="text" th:field="*{name}" style="width: 40em">
+
+    <br>
+    <label>Список запросов</label><br>
+    <textarea rows="20" th:field="*{queries}" form="search-task-form" style="width: 40em"></textarea>
 
     <br>
     <label>Google</label>

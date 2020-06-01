@@ -22,6 +22,7 @@ public class NewTaskController {
     @GetMapping("/new-task")
     public String showNewTaskForm(Model model) {
         SearchTaskModel searchTaskModel = new SearchTaskModel();
+        searchTaskModel.setName("Анализ конкурентности запросов");
         model.addAttribute("searchTaskModel", searchTaskModel);
 
         return "new-task";

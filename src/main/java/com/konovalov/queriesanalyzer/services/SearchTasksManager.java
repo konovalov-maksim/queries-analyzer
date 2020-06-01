@@ -31,6 +31,7 @@ public class SearchTasksManager {
                 .map(Query::new)
                 .collect(Collectors.toList());
         searchTask.addQueries(queries);
+        searchTask.setName(searchTaskModel.getName());
         searchTask.setDoGoogleSearch(searchTaskModel.getDoGoogleSearch());
         searchTask.setDoYandexSearch(searchTaskModel.getDoYandexSearch());
         searchTasksDao.save(searchTask);

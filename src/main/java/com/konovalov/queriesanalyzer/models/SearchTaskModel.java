@@ -4,6 +4,8 @@ public class SearchTaskModel {
 
     private String queries;
 
+    private String name;
+
     private boolean doYandexSearch;
 
     private boolean doGoogleSearch;
@@ -14,6 +16,14 @@ public class SearchTaskModel {
 
     public void setQueries(String queries) {
         this.queries = queries;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean getDoYandexSearch() {
