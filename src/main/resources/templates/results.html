@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Анализатор запросов - Результаты анализа запросов</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link type="text/css" rel="stylesheet" href="/style.css">
+</head>
+<body>
+<h1>Результаты анализа запросов</h1>
+<div style="text-align: center; display: inline-block">
+    <table class="border-table">
+        <tr class="table-header">
+            <td>Запрос</td>
+            <td>Google</td>
+            <td>Яндекс</td>
+        </tr>
+        <tr th:each="query : ${queries}">
+            <td th:text="${query.getText()}"/>
+            <td><input type="checkbox" th:value="${query.getGoogleSearchResult() != null}"></td>
+            <td><input type="checkbox" th:value="${query.getYandexSearchResult() != null}"></td>
+        </tr>
+    </table>
+    <div class="pagination-control">
+<!--        <a th:text="'<'" th:href="@{/tasks(page=${pagination.getCurPageNum()})}" th:if="${pagination.getCurPageNum() > 0}"/>-->
+<!--        <a th:text="1" th:href="@{/tasks(page=1)}" th:if="${pagination.isPrevPagesSkipped()}"/>-->
+<!--        <span th:text="..." th:if="${pagination.isPrevPagesSkipped()}"/>-->
+<!--        <a th:each="pageNum : ${pagination.getPrevPagesNums()}" th:text="${pageNum + 1}" th:href="@{/tasks(page=${pageNum + 1})}"/>-->
+<!--        <a th:text="${pagination.getCurPageNum() + 1}" th:if="${pagination.getLastPageNum() > 0}"/>-->
+<!--        <a th:each="pageNum : ${pagination.getNextPagesNums()}" th:text="${pageNum + 1}" th:href="@{/tasks(page=${pageNum + 1})}"/>-->
+<!--        <span th:text="..." th:if="${pagination.isNextPagesSkipped()}"/>-->
+<!--        <a th:text="${pagination.getLastPageNum() + 1}" th:href="@{/tasks(page=${pagination.getLastPageNum() + 1})}" th:if="${pagination.isNextPagesSkipped()}"/>-->
+<!--        <a th:text="'>'" th:href="@{/tasks(page=${pagination.getCurPageNum() + 2})}" th:if="${pagination.getCurPageNum() < pagination.getLastPageNum()}"/>-->
+    </div>
+</div>
+</body>
+</html>

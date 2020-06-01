@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class NewTaskForm {
+public class NewTaskController {
 
     private final SearchTasksManager searchTasksManager;
 
     @Autowired
-    public NewTaskForm(SearchTasksManager searchTasksManager) {
+    public NewTaskController(SearchTasksManager searchTasksManager) {
         this.searchTasksManager = searchTasksManager;
     }
 

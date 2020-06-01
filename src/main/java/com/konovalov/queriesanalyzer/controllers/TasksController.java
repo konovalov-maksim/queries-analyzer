@@ -16,12 +16,12 @@ import java.util.List;
 
 
 @Controller
-public class Tasks {
+public class TasksController {
 
     private final SearchTasksDao searchTasksDao;
 
     @Autowired
-    public Tasks(SearchTasksDao searchTasksDao) {
+    public TasksController(SearchTasksDao searchTasksDao) {
         this.searchTasksDao = searchTasksDao;
     }
 
@@ -32,7 +32,7 @@ public class Tasks {
     ) {
         pageNum = pageNum - 1;
         if (pageNum < 0) pageNum = 0;
-        Page<SearchTask> tasksPage = searchTasksDao.findAll(PageRequest.of(pageNum, 3, Sort.Direction.DESC,"id"));
+        Page<SearchTask> tasksPage = searchTasksDao.findAll(PageRequest.of(pageNum, 20, Sort.Direction.DESC,"id"));
         List<SearchTask> searchTasks = tasksPage.getContent();
         model.addAttribute("tasksList", searchTasks);
         PaginationModel pagination = new PaginationModel(tasksPage.getTotalPages(), pageNum);
