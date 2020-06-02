@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <title>Анализатор запросов - Новая задача</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link type="text/css" rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Ошибка</h1>
+    <!--/*@thymesVar id="exception" type="java.lang.Exception"*/-->
+    <p th:text="${exception.getMessage()}"/>
+    <p th:each="line : ${exception.getStackTrace()}" th:text="${line}" style="margin: 0"/>
+
+</body>
+</html>
