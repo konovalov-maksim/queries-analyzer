@@ -33,8 +33,8 @@ public class TasksController {
         pageNum = pageNum - 1;
         if (pageNum < 0) pageNum = 0;
         Page<SearchTask> tasksPage = searchTasksDao.findAll(PageRequest.of(pageNum, 20, Sort.Direction.DESC,"id"));
-        List<SearchTask> searchTasks = tasksPage.getContent();
-        model.addAttribute("tasksList", searchTasks);
+        model.addAttribute("tasksList", tasksPage.getContent());
+
         PaginationModel pagination = new PaginationModel(tasksPage.getTotalPages(), pageNum);
         model.addAttribute("pagination", pagination);
         return "tasks";
