@@ -1,5 +1,5 @@
 package com.konovalov.queriesanalyzer.entities;
 
-public enum SearchEngineEnum {
+public enum SearchEngine {
     GOOGLE, YANDEX;
 }

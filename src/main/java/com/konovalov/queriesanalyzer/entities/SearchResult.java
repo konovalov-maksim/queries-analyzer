@@ -25,7 +25,7 @@ public class SearchResult {
 
     @Column(name = "search_engine")
     @Enumerated(EnumType.STRING)
-    private SearchEngineEnum searchEngine;
+    private SearchEngine searchEngine;
 
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ResultToPage> topPages = new ArrayList<ResultToPage>();
@@ -62,11 +62,11 @@ public class SearchResult {
         this.adsNum = adsNum;
     }
 
-    public SearchEngineEnum getSearchEngine() {
+    public SearchEngine getSearchEngine() {
         return searchEngine;
     }
 
-    public void setSearchEngine(SearchEngineEnum searchEngine) {
+    public void setSearchEngine(SearchEngine searchEngine) {
         this.searchEngine = searchEngine;
     }
 
