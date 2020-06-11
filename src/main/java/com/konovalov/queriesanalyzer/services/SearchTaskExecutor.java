@@ -9,43 +9,52 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.ListIterator;
 
 @Service
 @Scope("prototype")
 @PropertySource("classpath:config.properties")
-public class SearchTaskExecutor {
+public class SearchTaskExecutor implements Runnable{
 
     @Value("${searchTasks.requestDelay.yandex}")
     private int yandexRequestDelay;
 
-    private SearchTask searchTask;
-    private final ApplicationContext context;
+    @Autowired
+    public SearchTaskExecutor(SearchTask searchTask) {
+        this.searchTask = searchTask;
+    }
 
-    private final Deque<Query> googleQueries = new ConcurrentLinkedDeque<>();
+    private final SearchTask searchTask;
+    private ApplicationContext context;
+
+    @Override
+    public void run() {
+        try {
+            if (searchTask.getDoGoogleSearch()) doGoogleSearch();
+            if (searchTask.getDoYandexSearch()) doYandexSearch();
+        } catch (InterruptedException e) {
+            //TODO logging
+            e.printStackTrace();
+        }
+    }
+
+
+    private void doYandexSearch() throws InterruptedException {
+        ListIterator<Query> queriesIterator = searchTask.getQueries().listIterator();
+        while (queriesIterator.hasNext()) {
+            YandexSearcher searcher = context.getBean(YandexSearcher.class, queriesIterator.next());
+            new Thread(searcher).start();
+            if (queriesIterator.hasNext()) Thread.sleep(yandexRequestDelay);
+        }
+    }
+
+    private void doGoogleSearch() {
+
+    }
 
     @Autowired
-    public SearchTaskExecutor(ApplicationContext context) {
+    public void setContext(ApplicationContext context) {
         this.context = context;
-    }
-
-    public void execute(SearchTask searchTask) {
-        if (this.searchTask != null) throw new IllegalStateException("Этот исполнитель задач уже был запущен ранее!");
-        this.searchTask = searchTask;
-        if (searchTask.getDoGoogleSearch()) doGoogleSearch(searchTask);
-        if (searchTask.getDoYandexSearch()) doYandexSearch(searchTask);
-    }
-
-    private void doYandexSearch(SearchTask searchTask) {
-        YandexSearcher searcher = context.getBean(YandexSearcher.class);
-        Deque<Query> queries = new ConcurrentLinkedDeque<>();
-
-
-    }
-
-    private void doGoogleSearch(SearchTask searchTask) {
-
     }
 
     public SearchTask getSearchTask() {

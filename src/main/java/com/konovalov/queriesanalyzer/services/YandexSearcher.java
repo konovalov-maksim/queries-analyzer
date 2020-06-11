@@ -9,18 +9,27 @@ import org.springframework.stereotype.Service;
 
 @Service(value = "yandexSearcher")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class YandexSearcher implements Searcher {
+public class YandexSearcher implements Runnable{
 
-    private final OkHttpClient client;
+    private  OkHttpClient client;
+    private final Query query;
+
+    public YandexSearcher(Query query) {
+        this.query = query;
+    }
+
+    public Query getQuery() {
+        return query;
+    }
 
     @Autowired
-    public YandexSearcher(OkHttpClient client) {
+    public void setClient(OkHttpClient client) {
         this.client = client;
     }
 
     @Override
-    public void doSearch(Query query) {
+    public void run() {
+        System.out.println("Inside do search");
 
     }
-
 }
