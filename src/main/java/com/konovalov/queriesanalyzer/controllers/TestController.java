@@ -22,7 +22,7 @@ public class TestController {
 
     @GetMapping("/test")
     public String test() {
-        SearchTask searchTask = searchTasksDao.findById(35L).get();
+        SearchTask searchTask = searchTasksDao.findById(36L).get();
         SearchTaskExecutor executor = context.getBean(SearchTaskExecutor.class, searchTask);
         new Thread(executor).start();
         return "done";
