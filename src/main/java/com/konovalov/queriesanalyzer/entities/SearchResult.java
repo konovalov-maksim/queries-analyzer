@@ -20,15 +20,23 @@ public class SearchResult {
     @Column(name = "ads_num")
     private Integer adsNum;
 
-    @Column(name = "date_added")
+    @Column(name = "date_added", insertable = false, updatable = false)
     private Date dateAdded;
 
     @Column(name = "search_engine")
     @Enumerated(EnumType.STRING)
     private SearchEngine searchEngine;
 
-    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ResultToPage> topPages = new ArrayList<ResultToPage>();
+    @OneToMany(mappedBy = "searchResult", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("position")
+    private List<Page> pages = new ArrayList<>();
+
+    public void addPages(List<Page> newPages) {
+        for (Page page : newPages) {
+            page.setSearchResult(this);
+            pages.add(page);
+        }
+    }
 
     public Long getId() {
         return id;
@@ -54,10 +62,6 @@ public class SearchResult {
         return dateAdded;
     }
 
-    public void setDateAdded(Date dateAdded) {
-        this.dateAdded = dateAdded;
-    }
-
     public void setAdsNum(Integer adsNum) {
         this.adsNum = adsNum;
     }
@@ -70,11 +74,11 @@ public class SearchResult {
         this.searchEngine = searchEngine;
     }
 
-    public List<ResultToPage> getTopPages() {
-        return topPages;
+    public List<Page> getPages() {
+        return pages;
     }
 
-    public void setTopPages(List<ResultToPage> topPages) {
-        this.topPages = topPages;
+    public void setPages(List<Page> pages) {
+        this.pages = pages;
     }
 }

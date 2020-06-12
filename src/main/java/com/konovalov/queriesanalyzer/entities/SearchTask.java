@@ -30,7 +30,7 @@ public class SearchTask {
     @Column(name = "status_id")
     private int statusId = 0;
 
-    @OneToMany(mappedBy = "searchTask", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "searchTask", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Query> queries = new ArrayList<>();
 
     public void addQueries(List<Query> queries) {
