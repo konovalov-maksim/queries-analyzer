@@ -33,9 +33,7 @@ public class YandexSearcher implements Runnable{
             .add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
             .add("Host", "www.yandex.ru")
             .add("Accept-Language:", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
-//            .add("Content-type", "application/json")
             .add("Connection", "keep-alive")
-            .add("Cookie", "ys=wprid.1591950416046518-1695894980627433340800251-production-app-host-vla-web-yp-144#mailchrome.8-23-2; i=CZnXErsstZEGrCBMhhbaGnvf/NGsxnC1SB/JhxQ/xry38PCFBFhCXOCrgMFL+BOjfvfXSIOfpGrTKw6HFdNXNr74GbE=; yandexuid=4597242861591948053; yp=1623486420.p_sw.1591950420#1592552858.szm.1_5:1280x720:1279x207; spravka=dD0xNTkxOTQ4NzQ1O2k9OTMuMTU3LjE3NS4zOTt1PTE1OTE5NDg3NDU0OTgxOTUyMjU7aD05MzA0MTEwM2IzMjA2MmJiMjE3ODhlYzNmMzY5MDYzYw==; ar=1591948736929629-754772")
             .add("Referer", "https://www.yandex.ru")
             .add("Upgrade-Insecure-Requests", "1")
             .build();

@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface CookiesDao extends CrudRepository<StoredCookie, Long> {
     List<StoredCookie> findByDomain(String domain);
+    StoredCookie findByDomainAndNameAndPath(String domain, String name, String path);
 }
 

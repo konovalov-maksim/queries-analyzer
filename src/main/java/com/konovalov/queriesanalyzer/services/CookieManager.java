@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,29 +27,48 @@ public class CookieManager implements CookieJar {
         this.cookiesDao = cookiesDao;
     }
 
+    //TODO реализовать удаление старых cookie
+
     @NotNull
     @Override
     public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
-        return new ArrayList<>();
+        String domain = httpUrl.topPrivateDomain();
+        List<Cookie> cookies = cookiesDao.findByDomain(domain).stream()
+                .map(this::convertFromStoredCookie)
+                .filter(cookie -> cookie.expiresAt() > System.currentTimeMillis())
+                .filter(cookie -> cookie.matches(httpUrl))
+                .collect(Collectors.toList());
+        return cookies;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> cookies) {
-        final String host = httpUrl.host();
-        List<StoredCookie> storedCookies = cookies.stream()
-                .map(c -> convertToStoredCookie(host, c))
-                .collect(Collectors.toList());
-        cookiesDao.saveAll(storedCookies);
+        for (Cookie cookie : cookies) {
+            StoredCookie storedCookie = cookiesDao.findByDomainAndNameAndPath(cookie.domain(), cookie.name(), cookie.path());
+            if (storedCookie != null) {
+                //Если cookie с такой комбинацией domain + name + path было найдено ранее, обновляем его
+                storedCookie.setValue(cookie.value());
+                storedCookie.setExpiresAt(cookie.expiresAt());
+                storedCookie.setHostOnly(cookie.hostOnly());
+                storedCookie.setHttpOnly(cookie.httpOnly());
+                storedCookie.setSecure(cookie.secure());
+            } else {
+                //Если такого cookie ранее не было сохранено, сохраняем
+                storedCookie = convertToStoredCookie(cookie);
+                cookiesDao.save(storedCookie);
+            }
+        }
+
     }
 
-    private StoredCookie convertToStoredCookie(String domain, Cookie cookie) {
+    private StoredCookie convertToStoredCookie(Cookie cookie) {
         StoredCookie storedCookie = new StoredCookie();
-        storedCookie.setDomain(domain);
+        storedCookie.setDomain(cookie.domain());
         storedCookie.setName(cookie.name());
+        storedCookie.setPath(cookie.path());
         storedCookie.setValue(cookie.value());
         storedCookie.setExpiresAt(cookie.expiresAt());
-        storedCookie.setPath(cookie.path());
         storedCookie.setHostOnly(cookie.hostOnly());
         storedCookie.setHttpOnly(cookie.httpOnly());
         storedCookie.setSecure(cookie.secure());
@@ -59,14 +77,11 @@ public class CookieManager implements CookieJar {
 
     private Cookie convertFromStoredCookie(StoredCookie storedCookie) {
         Cookie.Builder builder = new Cookie.Builder();
-        if (storedCookie.getDomain() != null) {
-            if (storedCookie.getHostOnly())
-                builder.hostOnlyDomain(storedCookie.getDomain());
-            else
-                builder.domain(storedCookie.getDomain());
-        }
-        if (storedCookie.getName() != null)
-            builder.name(storedCookie.getName());
+        builder.name(storedCookie.getName());
+        if (storedCookie.getHostOnly())
+            builder.hostOnlyDomain(storedCookie.getDomain());
+        else
+            builder.domain(storedCookie.getDomain());
         if (storedCookie.getValue() != null)
             builder.value(storedCookie.getValue());
         if (storedCookie.getExpiresAt() != null)
