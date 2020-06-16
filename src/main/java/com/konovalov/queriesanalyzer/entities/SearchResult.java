@@ -17,8 +17,8 @@ public class SearchResult {
     @Column(name = "pages_found")
     private Long pagesFound;
 
-    @Column(name = "ads_num")
-    private Integer adsNum;
+    @Column(name = "ads_count")
+    private Integer adsCount;
 
     @Column(name = "date_added", insertable = false, updatable = false)
     private Date dateAdded;
@@ -54,16 +54,17 @@ public class SearchResult {
         this.pagesFound = pagesFound;
     }
 
-    public Integer getAdsNum() {
-        return adsNum;
+    public Integer getAdsCount() {
+        return adsCount;
+    }
+
+
+    public void setAdsCount(Integer adsCount) {
+        this.adsCount = adsCount;
     }
 
     public Date getDateAdded() {
         return dateAdded;
-    }
-
-    public void setAdsNum(Integer adsNum) {
-        this.adsNum = adsNum;
     }
 
     public SearchEngine getSearchEngine() {

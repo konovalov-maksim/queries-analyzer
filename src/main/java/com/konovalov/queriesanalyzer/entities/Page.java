@@ -30,7 +30,7 @@ public class Page {
     @Column(name = "status_id")
     private Integer statusId = 0;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "site_id", referencedColumnName = "id")
     private Site site;
 

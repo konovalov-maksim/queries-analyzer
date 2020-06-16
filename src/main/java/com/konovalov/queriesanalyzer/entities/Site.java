@@ -1,6 +1,7 @@
 package com.konovalov.queriesanalyzer.entities;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "site")
@@ -22,6 +23,13 @@ public class Site {
 
     @Column(name = "iks")
     private Integer iks;
+
+    public Site() {
+    }
+
+    public Site(String domain) {
+        this.domain = domain;
+    }
 
     public Long getId() {
         return id;
@@ -61,5 +69,23 @@ public class Site {
 
     public void setIks(Integer iks) {
         this.iks = iks;
+    }
+
+    @Override
+    public String toString() {
+        return domain;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Site site = (Site) o;
+        return Objects.equals(domain, site.domain);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(domain);
     }
 }

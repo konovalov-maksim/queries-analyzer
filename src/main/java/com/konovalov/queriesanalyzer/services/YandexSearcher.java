@@ -1,12 +1,10 @@
 package com.konovalov.queriesanalyzer.services;
 
-import com.konovalov.queriesanalyzer.entities.Page;
-import com.konovalov.queriesanalyzer.entities.Query;
-import com.konovalov.queriesanalyzer.entities.SearchEngine;
-import com.konovalov.queriesanalyzer.entities.SearchResult;
+import com.konovalov.queriesanalyzer.entities.*;
 import okhttp3.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -19,13 +17,16 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service(value = "yandexSearcher")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class YandexSearcher implements Runnable{
+public class YandexSearcher implements Runnable {
 
     private OkHttpClient client;
+    private SearchListener searchListener;
     private final Query query;
     private int regionId = 213;
     private final Headers headers = new Headers.Builder()
@@ -52,9 +53,11 @@ public class YandexSearcher implements Runnable{
         try {
             String serpBody = loadSerp();
             saveDebugPage(serpBody);
-            parseSerp(serpBody);
-        } catch (IOException e) {
+            SearchResult searchResult = parseSerp(serpBody);
+            if (searchListener != null) searchListener.onSearchCompleted(searchResult);
+        } catch (Exception e) {
             e.printStackTrace();
+            if (searchListener != null) searchListener.onSearchFailed(query, e);
             //TODO реализовать обработку
         }
     }
@@ -73,6 +76,20 @@ public class YandexSearcher implements Runnable{
         SearchResult searchResult = new SearchResult();
         Document doc = Jsoup.parse(serpBody);
 
+        List<Page> organicPages = extractOrganicPages(doc);
+        searchResult.addPages(organicPages);
+
+        long pagesFound = extractTotalResults(doc);
+        searchResult.setPagesFound(pagesFound);
+
+        int adsCount = extractAdsCount(doc);
+        searchResult.setAdsCount(adsCount);
+
+        searchResult.setSearchEngine(SearchEngine.YANDEX);
+        return searchResult;
+    }
+
+    private List<Page> extractOrganicPages(Document doc) {
         Elements liList = doc.select("li.serp-item");
         List<Page> organicPages = liList.stream()
                 .filter(li -> li.attributes().size() == 4)
@@ -82,10 +99,29 @@ public class YandexSearcher implements Runnable{
                 .peek(System.out::println)
                 .collect(Collectors.toList());
         for (int i = 0; i < organicPages.size(); i++) organicPages.get(i).setPosition(i);
-        searchResult.addPages(organicPages);
+        return organicPages;
+    }
 
-        searchResult.setSearchEngine(SearchEngine.YANDEX);
-        return searchResult;
+    private long extractTotalResults(Document doc) {
+        Element totalResultsEl = doc.selectFirst("div.serp-adv__found");
+        if (totalResultsEl == null || totalResultsEl.text().isEmpty()) return 0;
+        //Напр. 'Нашлось 26 млн результатов'
+        String totalResultsStr = totalResultsEl.text();
+        Matcher numMatcher = Pattern.compile("\\d+").matcher(totalResultsStr);
+        if (!numMatcher.find()) {
+            //TODO залогировать тут ошибку парсинга
+            return 0;
+        }
+        int totalResults = Integer.parseInt(numMatcher.group());
+        int multiplier = 1;
+        if (totalResultsStr.contains("тыс.")) multiplier = 1000;
+        if (totalResultsStr.contains("млн")) multiplier = 1000000;
+        return totalResults * multiplier;
+    }
+
+    private int extractAdsCount(Document doc) {
+        Elements liList = doc.select("li.serp-item div.label_theme_direct");
+        return liList.size();
     }
 
     private void saveDebugPage(String responseBody) throws IOException {
@@ -100,6 +136,15 @@ public class YandexSearcher implements Runnable{
     @Autowired
     public void setClient(OkHttpClient client) {
         this.client = client;
+    }
+
+    public void setSearchListener(SearchListener searchListener) {
+        this.searchListener = searchListener;
+    }
+
+    interface SearchListener {
+        void onSearchCompleted(SearchResult searchResult);
+        void onSearchFailed(Query query, Exception e);
     }
 
 }
