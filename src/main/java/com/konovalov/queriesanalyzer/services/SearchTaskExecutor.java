@@ -4,6 +4,9 @@ import com.konovalov.queriesanalyzer.dao.PagesDao;
 import com.konovalov.queriesanalyzer.dao.SearchResultsDao;
 import com.konovalov.queriesanalyzer.dao.SitesDao;
 import com.konovalov.queriesanalyzer.entities.*;
+import com.konovalov.queriesanalyzer.services.searchers.SearchListener;
+import com.konovalov.queriesanalyzer.services.searchers.Searcher;
+import com.konovalov.queriesanalyzer.services.searchers.YandexSearcher;
 import okhttp3.HttpUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +54,7 @@ public class SearchTaskExecutor implements Runnable {
     private void doYandexSearch() throws InterruptedException {
         ListIterator<Query> queriesIterator = searchTask.getQueries().listIterator();
         while (queriesIterator.hasNext()) {
-            YandexSearcher searcher = context.getBean(YandexSearcher.class, queriesIterator.next());
+            Searcher searcher = context.getBean(YandexSearcher.class, queriesIterator.next());
             searcher.setSearchListener(searchListener);
             new Thread(searcher).start();
             if (queriesIterator.hasNext()) Thread.sleep(yandexRequestDelay);
@@ -62,7 +65,7 @@ public class SearchTaskExecutor implements Runnable {
 
     }
 
-    private YandexSearcher.SearchListener searchListener = new YandexSearcher.SearchListener(){
+    private SearchListener searchListener = new SearchListener(){
         @Override
         public synchronized void onSearchCompleted(SearchResult searchResult) {
             processSearchResult(searchResult);
