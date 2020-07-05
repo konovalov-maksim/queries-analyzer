@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "search_result")
@@ -81,5 +82,22 @@ public class SearchResult {
 
     public void setPages(List<Page> pages) {
         this.pages = pages;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SearchResult that = (SearchResult) o;
+        return Objects.equals(pagesFound, that.pagesFound) &&
+                Objects.equals(adsCount, that.adsCount) &&
+                Objects.equals(dateAdded, that.dateAdded) &&
+                searchEngine == that.searchEngine &&
+                Objects.equals(pages, that.pages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pagesFound, adsCount, dateAdded, searchEngine, pages);
     }
 }

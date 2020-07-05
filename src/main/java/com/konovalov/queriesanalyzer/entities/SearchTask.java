@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "search_task")
@@ -114,5 +115,23 @@ public class SearchTask {
 
     public void setStatusId(int statusId) {
         this.statusId = statusId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SearchTask that = (SearchTask) o;
+        return statusId == that.statusId &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(dateAdded, that.dateAdded) &&
+                Objects.equals(doYandexSearch, that.doYandexSearch) &&
+                Objects.equals(doGoogleSearch, that.doGoogleSearch) &&
+                Objects.equals(queries, that.queries);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, dateAdded, doYandexSearch, doGoogleSearch, statusId, queries);
     }
 }

@@ -1,4 +1,4 @@
-package com.konovalov.queriesanalyzer.services.searchers;
+package com.konovalov.queriesanalyzer.services.search.searchers;
 
 import com.konovalov.queriesanalyzer.entities.Query;
 import com.konovalov.queriesanalyzer.entities.SearchResult;
@@ -30,7 +30,7 @@ public abstract class Searcher implements Runnable {
             String serpBody = loadSerp();
             saveDebugPage(serpBody);
             SearchResult searchResult = parseSerp(serpBody);
-            if (searchListener != null) searchListener.onSearchCompleted(searchResult);
+            if (searchListener != null) searchListener.onSearchCompleted(query, searchResult);
         } catch (Exception e) {
             e.printStackTrace();
             if (searchListener != null) searchListener.onSearchFailed(query, e);

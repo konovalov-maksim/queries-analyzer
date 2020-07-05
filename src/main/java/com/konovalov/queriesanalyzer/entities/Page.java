@@ -2,6 +2,7 @@ package com.konovalov.queriesanalyzer.entities;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "page")
@@ -30,7 +31,7 @@ public class Page {
     @Column(name = "status_id")
     private Integer statusId = 0;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "site_id", referencedColumnName = "id")
     private Site site;
 
@@ -123,6 +124,27 @@ public class Page {
 
     public Status getStatus() {
         return status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Page page = (Page) o;
+        return Objects.equals(url, page.url) &&
+                Objects.equals(title, page.title) &&
+                Objects.equals(h1, page.h1) &&
+                Objects.equals(position, page.position) &&
+                Objects.equals(dateProcessed, page.dateProcessed) &&
+                Objects.equals(statusId, page.statusId) &&
+                Objects.equals(site, page.site) &&
+                Objects.equals(searchResult, page.searchResult) &&
+                Objects.equals(status, page.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url, title, h1, position, dateProcessed, statusId, site, searchResult, status);
     }
 
     @Override

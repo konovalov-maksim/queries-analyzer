@@ -1,4 +1,4 @@
-package com.konovalov.queriesanalyzer.services.searchers;
+package com.konovalov.queriesanalyzer.services.search.searchers;
 
 import com.konovalov.queriesanalyzer.entities.*;
 import okhttp3.*;
