@@ -40,14 +40,20 @@ public class Query {
     }
 
     public boolean isProcessed() {
-        if (searchTask == null) throw new IllegalStateException("Search task is null");
+        if (searchTask == null) throw new IllegalStateException("Query doesn't have search task");
         if (searchTask.getDoGoogleSearch()) {
-            if (googleSearchResult == null) return false;
+            if (googleStatusId != 2) return false;
         }
         if (searchTask.getDoYandexSearch()) {
-            if (yandexSearchResult == null) return false;
+            if (yandexStatusId != 2) return false;
         }
         return true;
+    }
+
+    public void setSearchResult(SearchResult searchResult) {
+        if (SearchEngine.GOOGLE.equals(searchResult.getSearchEngine())) setGoogleSearchResult(searchResult);
+        else if (SearchEngine.YANDEX.equals(searchResult.getSearchEngine())) setYandexSearchResult(searchResult);
+        else throw new IllegalArgumentException("Search result has wrong search engine type");
     }
 
     public Long getId() {

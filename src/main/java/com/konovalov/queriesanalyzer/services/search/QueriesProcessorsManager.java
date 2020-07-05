@@ -18,11 +18,15 @@ import java.util.concurrent.*;
 public class QueriesProcessorsManager {
 
     private final YandexQueriesProcessor yandexQueriesProcessor;
+    private final GoogleQueriesProcessor googleQueriesProcessor;
     private final QueriesDao queriesDao;
 
     private final ScheduledExecutorService yandexSearchScheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService googleSearchScheduler = Executors.newSingleThreadScheduledExecutor();
     private boolean isYandexSearchRunning = false;
+    private boolean isGoogleSearchRunning = false;
     private ScheduledFuture<?> yandexScheduledFuture;
+    private ScheduledFuture<?> googleScheduledFuture;
 
     @Value("${search.requestDelay.yandex}")
     private long yandexRequestDelay;
@@ -30,7 +34,11 @@ public class QueriesProcessorsManager {
     @Value("${search.requestDelay.google}")
     private long googleRequestDelay;
 
-    public QueriesProcessorsManager(YandexQueriesProcessor yandexQueriesProcessor, QueriesDao queriesDao) {
+    public QueriesProcessorsManager(
+            GoogleQueriesProcessor googleQueriesProcessor,
+            YandexQueriesProcessor yandexQueriesProcessor,
+            QueriesDao queriesDao) {
+        this.googleQueriesProcessor = googleQueriesProcessor;
         this.yandexQueriesProcessor = yandexQueriesProcessor;
         this.queriesDao = queriesDao;
     }
@@ -43,6 +51,10 @@ public class QueriesProcessorsManager {
             yandexQueriesProcessor.addQueries(yandexUnprocessedQueries);
             startYandexSearch();
         }
+        if (!googleUnprocessedQueries.isEmpty()) {
+            googleQueriesProcessor.addQueries(googleUnprocessedQueries);
+            startGoogleSearch();
+        }
     }
 
     private synchronized void startYandexSearch() {
@@ -52,14 +64,22 @@ public class QueriesProcessorsManager {
         isYandexSearchRunning = true;
     }
 
-    private void stopYandexSearch() {
+    private synchronized void stopYandexSearch() {
         if (!isYandexSearchRunning) return;
         yandexScheduledFuture.cancel(false);
         isYandexSearchRunning = false;
     }
 
-    private void startGoogleSearch() {
-
+    private synchronized void startGoogleSearch() {
+        if (isGoogleSearchRunning) return;
+        googleScheduledFuture = googleSearchScheduler
+                .scheduleAtFixedRate(googleQueriesProcessor, 0, googleRequestDelay, TimeUnit.MILLISECONDS);
+        isGoogleSearchRunning = true;
     }
 
+    private synchronized void stopGoogleSearch() {
+        if (!isGoogleSearchRunning) return;
+        googleScheduledFuture.cancel(false);
+        isGoogleSearchRunning = false;
+    }
 }

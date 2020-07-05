@@ -55,7 +55,8 @@ public abstract class Searcher implements Runnable {
     }
 
     private void saveDebugPage(String responseBody) throws IOException {
-        Files.write(Paths.get(".").resolve("html/" + query.getText() + ".htm"), responseBody.getBytes(),
+        Files.write(Paths.get(".").resolve("html/" + query + " " +
+                        searchUrl.topPrivateDomain().replaceAll("[^a-zA-Z0-9]+", "_") + ".htm"), responseBody.getBytes(),
                 StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
     }
 
