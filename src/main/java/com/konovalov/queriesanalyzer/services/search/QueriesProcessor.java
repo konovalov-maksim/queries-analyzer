@@ -1,6 +1,5 @@
 package com.konovalov.queriesanalyzer.services.search;
 
-import com.konovalov.queriesanalyzer.dao.PagesDao;
 import com.konovalov.queriesanalyzer.dao.QueriesDao;
 import com.konovalov.queriesanalyzer.dao.SearchResultsDao;
 import com.konovalov.queriesanalyzer.dao.SitesDao;
@@ -23,20 +22,24 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public abstract class QueriesProcessor implements Runnable, SearchListener {
 
-    private final Deque<Searcher> searchers = new ConcurrentLinkedDeque<>();
+    private final Deque<Searcher> searchersQueue = new ConcurrentLinkedDeque<>();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private int threadsCount = 0 ;
 
     private final SitesDao sitesDao;
     private final SearchResultsDao searchResultsDao;
-    private final PagesDao pagesDao;
     private final QueriesDao queriesDao;
+    private final QueriesProcessorsManager queriesProcessorsManager;
 
-    public QueriesProcessor(SitesDao sitesDao, SearchResultsDao searchResultsDao, PagesDao pagesDao, QueriesDao queriesDao) {
+    public QueriesProcessor(
+            SitesDao sitesDao,
+            SearchResultsDao searchResultsDao,
+            QueriesDao queriesDao,
+            QueriesProcessorsManager queriesProcessorsManager) {
         this.sitesDao = sitesDao;
         this.searchResultsDao = searchResultsDao;
-        this.pagesDao = pagesDao;
         this.queriesDao = queriesDao;
+        this.queriesProcessorsManager = queriesProcessorsManager;
     }
 
     abstract Searcher createSearcher(Query query);
@@ -45,14 +48,17 @@ public abstract class QueriesProcessor implements Runnable, SearchListener {
 
     abstract int getThreadsPoolSize();
 
+    abstract void onAllQueriesProcessed(QueriesProcessorsManager queriesProcessorsManager);
+
     @Override
     public void run() {
         doSearch();
     }
 
     private synchronized void doSearch() {
-        if (isThreadsPoolFull() || searchers.isEmpty()) return;
-        Searcher searcher = searchers.pollFirst();
+        logger.info("Inside doSearch");
+        if (isThreadsPoolFull() || searchersQueue.isEmpty()) return;
+        Searcher searcher = searchersQueue.pollFirst();
         searcher.setSearchListener(this);
         threadsCount++;
         logger.info(searcher.getQuery() + " processing started. Threads: " + threadsCount);
@@ -65,7 +71,7 @@ public abstract class QueriesProcessor implements Runnable, SearchListener {
             Searcher searcher = createSearcher(query);
             setQueryStatusId(query, 1);
             queriesDao.save(query);
-            searchers.addLast(searcher);
+            searchersQueue.addLast(searcher);
         }
     }
 
@@ -77,7 +83,7 @@ public abstract class QueriesProcessor implements Runnable, SearchListener {
     @Transactional(propagation = Propagation.REQUIRED)
     public synchronized void onSearchCompleted(Query query, SearchResult searchResult) {
         threadsCount--;
-        logger.info(query + "processing complete. Threads: " + threadsCount);
+        logger.info(query + " processing complete. Threads: " + threadsCount);
         query.setSearchResult(searchResult);
         setQueryStatusId(query, 2);
         for (Page page : searchResult.getPages()) {
@@ -85,6 +91,7 @@ public abstract class QueriesProcessor implements Runnable, SearchListener {
         }
         searchResultsDao.save(searchResult);
         queriesDao.save(query);
+        if (searchersQueue.isEmpty()) onAllQueriesProcessed(queriesProcessorsManager);
     }
 
     @Override

@@ -43,8 +43,8 @@ public class QueriesProcessorsManager {
         this.queriesDao = queriesDao;
     }
 
-    @Scheduled(fixedRateString = "${search.queriesScanningDelay}")
-    public void processUnprocessedQueries() {
+//    @Scheduled(fixedRateString = "${search.queriesScanningDelay}")
+    public synchronized void processUnprocessedQueries() {
         List<Query> googleUnprocessedQueries = queriesDao.findUnprocessedGoogleQueries();
         List<Query> yandexUnprocessedQueries = queriesDao.findUnprocessedYandexQueries();
         if (!yandexUnprocessedQueries.isEmpty()) {
@@ -64,7 +64,7 @@ public class QueriesProcessorsManager {
         isYandexSearchRunning = true;
     }
 
-    private synchronized void stopYandexSearch() {
+    synchronized void stopYandexSearch() {
         if (!isYandexSearchRunning) return;
         yandexScheduledFuture.cancel(false);
         isYandexSearchRunning = false;
@@ -77,7 +77,7 @@ public class QueriesProcessorsManager {
         isGoogleSearchRunning = true;
     }
 
-    private synchronized void stopGoogleSearch() {
+    synchronized void stopGoogleSearch() {
         if (!isGoogleSearchRunning) return;
         googleScheduledFuture.cancel(false);
         isGoogleSearchRunning = false;

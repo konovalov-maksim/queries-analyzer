@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -30,9 +31,9 @@ public class GoogleQueriesProcessor extends QueriesProcessor {
             ApplicationContext context,
             SitesDao sitesDao,
             SearchResultsDao searchResultsDao,
-            PagesDao pagesDao,
-            QueriesDao queriesDao) {
-        super(sitesDao, searchResultsDao, pagesDao, queriesDao);
+            QueriesDao queriesDao,
+            @Lazy QueriesProcessorsManager queriesProcessorsManager) {
+        super(sitesDao, searchResultsDao, queriesDao, queriesProcessorsManager);
         this.context = context;
     }
 
@@ -49,5 +50,10 @@ public class GoogleQueriesProcessor extends QueriesProcessor {
     @Override
     int getThreadsPoolSize() {
         return threadsPoolSize;
+    }
+
+    @Override
+    void onAllQueriesProcessed(QueriesProcessorsManager queriesProcessorsManager) {
+        queriesProcessorsManager.stopGoogleSearch();
     }
 }
