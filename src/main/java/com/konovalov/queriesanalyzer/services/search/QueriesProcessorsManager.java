@@ -2,6 +2,8 @@ package com.konovalov.queriesanalyzer.services.search;
 
 import com.konovalov.queriesanalyzer.dao.QueriesDao;
 import com.konovalov.queriesanalyzer.entities.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.PropertySource;
@@ -28,6 +30,8 @@ public class QueriesProcessorsManager {
     private ScheduledFuture<?> yandexScheduledFuture;
     private ScheduledFuture<?> googleScheduledFuture;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Value("${search.requestDelay.yandex}")
     private long yandexRequestDelay;
 
@@ -47,6 +51,8 @@ public class QueriesProcessorsManager {
     public synchronized void processUnprocessedQueries() {
         List<Query> googleUnprocessedQueries = queriesDao.findUnprocessedGoogleQueries();
         List<Query> yandexUnprocessedQueries = queriesDao.findUnprocessedYandexQueries();
+        logger.info("Searching for unprocessed queries. Found for google: " + googleUnprocessedQueries.size()
+                + "; Found for yandex: " + yandexUnprocessedQueries.size());
         if (!yandexUnprocessedQueries.isEmpty()) {
             yandexQueriesProcessor.addQueries(yandexUnprocessedQueries);
             startYandexSearch();
@@ -59,6 +65,7 @@ public class QueriesProcessorsManager {
 
     private synchronized void startYandexSearch() {
         if (isYandexSearchRunning) return;
+        logger.info("Yandex search is started");
         yandexScheduledFuture = yandexSearchScheduler
                 .scheduleAtFixedRate(yandexQueriesProcessor, 0, yandexRequestDelay, TimeUnit.MILLISECONDS);
         isYandexSearchRunning = true;
@@ -66,12 +73,14 @@ public class QueriesProcessorsManager {
 
     synchronized void stopYandexSearch() {
         if (!isYandexSearchRunning) return;
+        logger.info("Yandex search is stopped");
         yandexScheduledFuture.cancel(false);
         isYandexSearchRunning = false;
     }
 
     private synchronized void startGoogleSearch() {
         if (isGoogleSearchRunning) return;
+        logger.info("Google search is started");
         googleScheduledFuture = googleSearchScheduler
                 .scheduleAtFixedRate(googleQueriesProcessor, 0, googleRequestDelay, TimeUnit.MILLISECONDS);
         isGoogleSearchRunning = true;
@@ -79,6 +88,7 @@ public class QueriesProcessorsManager {
 
     synchronized void stopGoogleSearch() {
         if (!isGoogleSearchRunning) return;
+        logger.info("Google search is stopped");
         googleScheduledFuture.cancel(false);
         isGoogleSearchRunning = false;
     }

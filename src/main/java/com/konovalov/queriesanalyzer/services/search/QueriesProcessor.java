@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public abstract class QueriesProcessor implements Runnable, SearchListener {
 
+    private static final Object LOCK = new Object();
     private final Deque<Searcher> searchersQueue = new ConcurrentLinkedDeque<>();
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private int threadsCount = 0 ;
@@ -56,7 +57,6 @@ public abstract class QueriesProcessor implements Runnable, SearchListener {
     }
 
     private synchronized void doSearch() {
-        logger.info("Inside doSearch");
         if (isThreadsPoolFull() || searchersQueue.isEmpty()) return;
         Searcher searcher = searchersQueue.pollFirst();
         searcher.setSearchListener(this);
@@ -72,6 +72,7 @@ public abstract class QueriesProcessor implements Runnable, SearchListener {
             setQueryStatusId(query, 1);
             queriesDao.save(query);
             searchersQueue.addLast(searcher);
+            logger.info("Query " + query + " is added to queue");
         }
     }
 
@@ -100,20 +101,24 @@ public abstract class QueriesProcessor implements Runnable, SearchListener {
         threadsCount--;
         setQueryStatusId(query, 3);
         queriesDao.save(query);
-        //TODO логирование
+        logger.error("Processing failed for query: " + query, e);
     }
 
 
     @Transactional(propagation = Propagation.REQUIRED)
     void bindToSite(Page page) {
-        HttpUrl pageUrl = HttpUrl.parse(page.getUrl());
-        String domain = pageUrl.host();
-        Site site = sitesDao.findFirstByDomain(domain);
-        if (site == null) {
-            site = new Site(domain);
-            sitesDao.save(site);
+        synchronized (LOCK) {
+            HttpUrl pageUrl = HttpUrl.parse(page.getUrl());
+            String domain = pageUrl.host();
+            Site site = sitesDao.findFirstByDomain(domain);
+            if (site == null) {
+                site = new Site(domain);
+                sitesDao.save(site);
+                logger.info("New site is added: " + site);
+            }
+            page.setSite(site);
+            logger.info("Page " + page + " is bound to the site " + site);
         }
-        page.setSite(site);
     }
 
 }
